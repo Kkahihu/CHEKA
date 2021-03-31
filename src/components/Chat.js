@@ -18,40 +18,42 @@ function Chat() {
     const [seed, setSeed] = useState("");
     const [roomName, setRoomName] = useState("");
     const [messages, setMessages] = useState([]);
-    const [{user}, dispatch] = useStateValue();
+    const [{user}] = useStateValue();
     //hook
     const { roomId } = useParams();
 
     //change name on the chat
     useEffect(() => {
         if (roomId) {
-            db.collection('rooms').doc(roomId).onSnapshot(snapshot => setRoomName
-                (snapshot.data().name)
-            );
+            db.collection('rooms').doc(roomId).onSnapshot(snapshot => {
+                setRoomName(snapshot.data().name);
+            });
+
             db.collection('rooms')
             .doc(roomId)
             .collection("messages")
             .orderBy('timestamp', 'asc')
-            .onSnapshot(snapshot => setMessages(snapshot.docs.map((doc) => doc.data()))
-            );
+            .onSnapshot(snapshot => { setMessages(snapshot.docs.map(doc => doc.data()));
+            });
         }
     },[roomId]);
     
-
+    //Randomize Avator
     useEffect(() => {
         setSeed(Math.floor(Math.random() * 5000));
     }, [roomId]);
 
+    //Input for database
     const sendMessage = (e) => {
         e.preventDefault();
          db.collection('rooms').doc(roomId).collection('messages').add({
-            message: input,
-            name: user.displayName,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            "message": input,
+            "name": user.displayName,
+            "timestamp": firebase.firestore.FieldValue.serverTimestamp(),
         });
 
         setInput("");
-    }
+    };
 
     return (
         <div className="chat">
@@ -63,7 +65,7 @@ function Chat() {
             <p className="chat_room_last_seen">
              Last seen {" "}
              {new Date(
-                            messages[messages.length - 1]?.timestamp?.toDate()
+                        messages[messages.length - 1]?.timestamp?.toDate()
                         ).toUTCString()}
              </p>
             
@@ -91,7 +93,7 @@ function Chat() {
                             {message.name}
                         </span>
                             {message.message}
-                            <span className="chat_timestamp">{new Date(message.timestamp?.toDate()).toUTCString()}</span>
+                            <span className="chat_timestamp">{new Date(message.timestamp?.toDate()).toUTCString(+ 3)}</span>
                     </p>
                 ))}
             
