@@ -9,7 +9,8 @@ import { useStateValue } from '../StateProvider';
 import './Login.css';
 
 function Login() {
-    const [{}, dispatch] = useStateValue();
+    // eslint-disable-next-line
+    const [ {} ,dispatch] = useStateValue();
 
 
     const signIn = () => {
